@@ -46,13 +46,15 @@ class Server {
         console.log('Escuchando conexiones');
         this.io.on('connection', (cliente) => {
             //Conectar cliente
-            socket.conectarCliente(cliente);
+            socket.conectarCliente(cliente, this.io);
             //Configurar Usuario
             socket.configurarUsuario(cliente, this.io);
+            //Obtener usuarios actvos
+            socket.obtenerUsuarios(cliente, this.io);
             //Mensajes
             socket.mensaje(cliente, this.io);
             //Desconectar
-            socket.desconectado(cliente);
+            socket.desconectado(cliente, this.io);
         });
     }
     start(callback) {
