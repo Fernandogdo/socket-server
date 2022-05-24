@@ -1,9 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mensaje = exports.desconectado = void 0;
+exports.configurarUsuario = exports.mensaje = exports.desconectado = exports.conectarCliente = exports.usuariosConectados = void 0;
+const usuarios_lista_1 = require("../classes/usuarios-lista");
+const usuario_1 = require("../classes/usuario");
+exports.usuariosConectados = new usuarios_lista_1.UsuariosLista();
+const conectarCliente = (cliente) => {
+    const usuario = new usuario_1.Usuario(cliente.id);
+    exports.usuariosConectados.agregar(usuario);
+};
+exports.conectarCliente = conectarCliente;
 const desconectado = (cliente) => {
     cliente.on('disconnect', () => {
         console.log("cliente desconectado");
+        exports.usuariosConectados.borrarUsuario(cliente.id);
     });
 };
 exports.desconectado = desconectado;
@@ -15,3 +24,15 @@ const mensaje = (cliente, io) => {
     });
 };
 exports.mensaje = mensaje;
+//Escuchar configurar usuario
+const configurarUsuario = (cliente, io) => {
+    cliente.on('configurar-usuario', (payload, callback) => {
+        exports.usuariosConectados.actualizarNombre(cliente.id, payload.nombre);
+        callback({
+            ok: true,
+            msg: 'Usuario ' + payload.nombre + ' configurado'
+        });
+        // io.emit('configurar-usuario', payload);
+    });
+};
+exports.configurarUsuario = configurarUsuario;
